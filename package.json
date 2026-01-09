@@ -1,0 +1,22 @@
+{
+  "name": "@hexcore-labs/ctfd-sdk",
+  "version": "1.0.0",
+  "module": "index.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && bun build ./src/index.ts --outdir ./dist --target node && tsc",
+    "prepublishOnly": "bun run build",
+    "prepare": "bun run build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
