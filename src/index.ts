@@ -1,27 +1,25 @@
 /**
- * CTFd API Client SDK
- * Generated based on CTFd Swagger/OpenAPI 2.0 Definition (v1)
- *
- * Designed for Server-Side usage (Next.js Server Actions, Node.js).
- * Includes Public, User, and Admin API endpoints.
+ * CTFd TypeScript SDK
+ * Generated based on CTFd v3 API Specification
  */
 
-import type { HeadersInit } from "bun";
+// ==========================================
+// Core Types & Interfaces
+// ==========================================
 
-/* -------------------------------------------------------------------------- */
-/*                                    TYPES                                   */
-/* -------------------------------------------------------------------------- */
+export interface APISuccessResponse<T> {
+  success: true;
+  data: T;
+}
 
-export interface CTFdResponse<T = any> {
-  success: boolean;
-  data?: T;
-  errors?: string[];
-  message?: string;
-  meta?: {
-    pagination?: {
+export interface APIPaginatedResponse<T> {
+  success: true;
+  data: T[];
+  meta: {
+    pagination: {
       page: number;
-      next?: number;
-      prev?: number;
+      next: number | null;
+      prev: number | null;
       pages: number;
       per_page: number;
       total: number;
@@ -29,140 +27,65 @@ export interface CTFdResponse<T = any> {
   };
 }
 
-// --- Resource Interfaces ---
+export interface APIErrorResponse {
+  success: false;
+  errors: string[];
+}
 
-export interface CTFdChallenge {
+export type APIResponse<T> = APISuccessResponse<T> | APIPaginatedResponse<T>;
+
+// --- Model Definitions (Mapped from swagger.json) ---
+
+export interface User {
   id: number;
   name: string;
-  value: number;
+  email?: string;
+  type?: string;
+  oauth_id?: number;
+  team_id?: number;
+  website?: string;
+  affiliation?: string;
+  country?: string;
+  bracket?: string;
+  hidden?: boolean;
+  banned?: boolean;
+  verified?: boolean;
+  created?: string;
+}
+
+export interface Team {
+  id: number;
+  name: string;
+  email?: string;
+  oauth_id?: number;
+  captain_id?: number;
+  website?: string;
+  affiliation?: string;
+  country?: string;
+  bracket?: string;
+  hidden?: boolean;
+  banned?: boolean;
+  created?: string;
+  secret?: string;
+}
+
+export interface Challenge {
+  id: number;
+  name: string;
+  description: string;
   category: string;
+  value: number;
   type: string;
   state: string;
-  description?: string;
-  connection_info?: string;
   max_attempts?: number;
+  requirements?: any;
+  connection_info?: string;
   next_id?: number;
-  attribution?: string;
-  solves?: number;
+  files?: string[];
   solved_by_me?: boolean;
-  requirements?: any;
-  [key: string]: any;
 }
 
-export interface CTFdTeam {
-  id: number;
-  name: string;
-  email?: string;
-  score?: number;
-  admin?: boolean;
-  banned?: boolean;
-  hidden?: boolean;
-  country?: string;
-  affiliation?: string;
-  website?: string;
-  captain_id?: number;
-  oauth_id?: number;
-  bracket_id?: number;
-  members?: number[];
-  created?: string;
-  [key: string]: any;
-}
-
-export interface CTFdUser {
-  id: number;
-  name: string;
-  email?: string;
-  score?: number;
-  type?: string; // 'admin' | 'user'
-  admin?: boolean;
-  banned?: boolean;
-  hidden?: boolean;
-  verified?: boolean;
-  country?: string;
-  affiliation?: string;
-  website?: string;
-  oauth_id?: number;
-  team_id?: number;
-  bracket_id?: number;
-  created?: string;
-  [key: string]: any;
-}
-
-export interface CTFdAward {
-  id: number;
-  user_id?: number;
-  team_id?: number;
-  name?: string;
-  description?: string;
-  value: number;
-  category?: string;
-  icon?: string;
-  date?: string;
-  requirements?: any;
-}
-
-export interface CTFdTag {
-  id: number;
-  challenge_id: number;
-  value: string;
-}
-
-export interface CTFdTopic {
-  id: number;
-  value: string;
-}
-
-export interface CTFdHint {
-  id: number;
-  challenge_id: number;
-  content: string;
-  cost: number;
-  type: string;
-  requirements?: any;
-}
-
-export interface CTFdFlag {
-  id: number;
-  challenge_id: number;
-  content: string;
-  type: string; // 'static' | 'regex'
-  data?: string; // Case insensitive info etc
-}
-
-export interface CTFdFile {
-  id: number;
-  type: string;
-  location: string;
-  sha1sum?: string;
-}
-
-export interface CTFdNotification {
-  id: number;
-  title: string;
-  content: string;
-  date: string;
-  user_id?: number;
-  team_id?: number;
-}
-
-export interface CTFdPage {
-  id: number;
-  title: string;
-  route: string;
-  content: string;
-  draft: boolean;
-  hidden: boolean;
-  auth_required: boolean;
-  format: string;
-}
-
-export interface CTFdConfig {
-  id: number;
-  key: string;
-  value: string;
-}
-
-export interface CTFdSubmission {
+export interface Submission {
   id: number;
   challenge_id: number;
   user_id: number;
@@ -173,702 +96,715 @@ export interface CTFdSubmission {
   date: string;
 }
 
-export interface CTFdSolution {
+export interface Config {
+  id: number;
+  key: string;
+  value: string;
+}
+
+export interface Notification {
+  id: number;
+  title: string;
+  content: string;
+  date: string;
+  user_id?: number;
+  team_id?: number;
+}
+
+export interface Page {
+  id: number;
+  title: string;
+  route: string;
+  content: string;
+  draft: boolean;
+  hidden: boolean;
+  auth_required: boolean;
+}
+
+export interface Flag {
+  id: number;
+  challenge_id: number;
+  type: string;
+  content: string;
+  data?: string;
+}
+
+export interface Hint {
   id: number;
   challenge_id: number;
   content: string;
-  state: string; // 'visible' | 'hidden'
+  cost: number;
+  type: string;
+  requirements?: any;
 }
 
-export interface CTFdToken {
+export interface Award {
+  id: number;
+  user_id?: number;
+  team_id?: number;
+  name: string;
+  description?: string;
+  value: number;
+  category?: string;
+  icon?: string;
+  date: string;
+  requirements?: any;
+}
+
+export interface File {
+  id: number;
+  type: string;
+  location: string;
+}
+
+export interface Tag {
+  id: number;
+  challenge_id: number;
+  value: string;
+}
+
+export interface Token {
   id: number;
   type: string;
   user_id: number;
+  value?: string;
   created: string;
   expiration: string;
-  description?: string;
-  value?: string; // Only visible on creation
 }
 
-// --- Client Options ---
-
-export interface CTFdClientOptions {
-  /** The base URL of the CTFd instance (e.g., https://demo.ctfd.io) */
-  url: string;
-  /** API Access Token generated in CTFd Settings */
-  apiKey?: string;
-  /** Session cookie (if not using API Key) */
-  sessionCookie?: string;
-  /** CSRF Token (required if using sessionCookie for state-changing requests) */
-  csrfToken?: string;
+export interface Unlock {
+  id: number;
+  user_id: number;
+  team_id?: number;
+  target: number;
+  type: string;
+  date: string;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                MAIN CLASS                                  */
-/* -------------------------------------------------------------------------- */
+// --- Query Parameters Interfaces ---
+
+export interface PaginationParams {
+  page?: number;
+  per_page?: number;
+}
+
+export interface ChallengeSearchParams extends PaginationParams {
+  name?: string;
+  max_attempts?: number;
+  value?: number;
+  category?: string;
+  type?: string;
+  state?: string;
+  q?: string;
+  field?: "name" | "description" | "category" | "type" | "state";
+}
+
+export interface UserSearchParams extends PaginationParams {
+  affiliation?: string;
+  country?: string;
+  bracket?: string;
+  q?: string;
+  field?: "name" | "website" | "country" | "bracket" | "affiliation";
+}
+
+export interface TeamSearchParams extends PaginationParams {
+  affiliation?: string;
+  country?: string;
+  bracket?: string;
+  q?: string;
+  field?: "name" | "website" | "country" | "bracket" | "affiliation";
+}
+
+export interface SubmissionSearchParams extends PaginationParams {
+  challenge_id?: number;
+  user_id?: number;
+  team_id?: number;
+  ip?: string;
+  provided?: string;
+  type?: string;
+  q?: string;
+  field?: "challenge_id" | "user_id" | "team_id" | "ip" | "provided" | "type";
+}
+
+// ==========================================
+// Base Client
+// ==========================================
 
 export class CTFdClient {
-  private baseUrl: string;
+  private baseURL: string;
+  private accessToken: string;
   private headers: HeadersInit;
 
-  constructor(options: CTFdClientOptions) {
-    this.baseUrl = options.url.replace(/\/$/, ""); // Remove trailing slash
+  public users: UsersResource;
+  public teams: TeamsResource;
+  public challenges: ChallengesResource;
+  public scoreboard: ScoreboardResource;
+  public submissions: SubmissionsResource;
+  public configs: ConfigsResource;
+  public notifications: NotificationsResource;
+  public pages: PagesResource;
+  public flags: FlagsResource;
+  public hints: HintsResource;
+  public files: FilesResource;
+  public awards: AwardsResource;
+  public tags: TagsResource;
+  public tokens: TokensResource;
+  public unlocks: UnlocksResource;
+  public statistics: StatisticsResource;
 
+  constructor(baseURL: string, accessToken: string) {
+    this.baseURL = baseURL.replace(/\/$/, ""); // Remove trailing slash
+    this.accessToken = accessToken;
     this.headers = {
-      Accept: "application/json",
-      // 'Content-Type': 'application/json' is set dynamically because FormData cannot have it set manually
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.accessToken}`,
     };
 
-    if (options.apiKey) {
-      this.headers["Authorization"] = `Token ${options.apiKey}`;
-    }
-
-    if (options.sessionCookie) {
-      this.headers["Cookie"] = `session=${options.sessionCookie}`;
-    }
-
-    if (options.csrfToken) {
-      this.headers["CSRF-Token"] = options.csrfToken;
-    }
+    // Initialize Resources
+    this.users = new UsersResource(this);
+    this.teams = new TeamsResource(this);
+    this.challenges = new ChallengesResource(this);
+    this.scoreboard = new ScoreboardResource(this);
+    this.submissions = new SubmissionsResource(this);
+    this.configs = new ConfigsResource(this);
+    this.notifications = new NotificationsResource(this);
+    this.pages = new PagesResource(this);
+    this.flags = new FlagsResource(this);
+    this.hints = new HintsResource(this);
+    this.files = new FilesResource(this);
+    this.awards = new AwardsResource(this);
+    this.tags = new TagsResource(this);
+    this.tokens = new TokensResource(this);
+    this.unlocks = new UnlocksResource(this);
+    this.statistics = new StatisticsResource(this);
   }
 
-  /**
-   * Internal fetch wrapper
-   */
-  private async request<T>(
+  public async request<T>(
+    method: "GET" | "POST" | "PATCH" | "DELETE",
     endpoint: string,
-    options: RequestInit = {}
-  ): Promise<CTFdResponse<T>> {
-    const url = `${this.baseUrl}${endpoint}`;
+    body?: any,
+    params?: any
+  ): Promise<T> {
+    const url = new URL(`${this.baseURL}/api/v1${endpoint}`);
 
-    // Manage Content-Type: If body is FormData, delete Content-Type to let browser/node set boundary
-    const headers = { ...this.headers, ...options.headers } as Record<
-      string,
-      string
-    >;
-    if (options.body instanceof FormData) {
-      delete headers["Content-Type"];
-    } else if (!headers["Content-Type"]) {
-      headers["Content-Type"] = "application/json";
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        if (params[key] !== undefined) {
+          url.searchParams.append(key, String(params[key]));
+        }
+      });
     }
 
-    const fetchOptions: RequestInit = {
-      ...options,
-      headers,
-      credentials: "include",
+    const config: RequestInit = {
+      method,
+      headers: this.headers,
     };
 
-    const response = await fetch(url, fetchOptions);
-
-    let body: any;
-    try {
-      // HEAD requests might not have body
-      if (options.method === "HEAD") return { success: response.ok } as any;
-      body = await response.json();
-    } catch (e) {
-      // If delete or other methods return 200 OK but empty body
-      if (response.ok) return { success: true } as any;
-      throw new Error(
-        `CTFd API Error: Failed to parse JSON from ${endpoint}. Status: ${response.status}`
-      );
+    if (body) {
+      config.body = JSON.stringify(body);
     }
 
-    if (!response.ok) {
-      // CTFd usually returns { success: false, errors: [] }
-      throw new Error(
-        body.errors?.join(", ") ||
-          body.message ||
-          `API Error ${response.status}`
-      );
+    const response = await fetch(url.toString(), config);
+    const data = await response.json();
+
+    if (!response.ok || data.success === false) {
+      const errorMsg = data.errors
+        ? data.errors.join(", ")
+        : "Unknown API Error";
+      throw new Error(`CTFd API Error [${response.status}]: ${errorMsg}`);
     }
 
-    return body;
+    // Return the full response object (including meta/success) or just data depending on preference.
+    // Here we return data directly for single items, or the paginated wrapper for lists.
+    return data as T;
+  }
+}
+
+// ==========================================
+// Resources
+// ==========================================
+
+class BaseResource {
+  constructor(protected client: CTFdClient) {}
+}
+
+export class ChallengesResource extends BaseResource {
+  async list(
+    params?: ChallengeSearchParams
+  ): Promise<APIPaginatedResponse<Challenge>> {
+    return this.client.request("GET", "/challenges", undefined, params);
   }
 
-  // =========================================================================
-  // Challenges
-  // =========================================================================
+  async get(id: number): Promise<APISuccessResponse<Challenge>> {
+    return this.client.request("GET", `/challenges/${id}`);
+  }
 
-  public challenges = {
-    /** List challenges (public or admin view depending on auth) */
-    list: async (
-      query: Partial<CTFdChallenge> & {
-        q?: string;
-        field?: string;
-        view?: "admin" | "user";
-      } = {}
-    ) => {
-      const qs = new URLSearchParams(query as any).toString();
-      return (await this.request<CTFdChallenge[]>(`/api/v1/challenges?${qs}`))
-        .data!;
-    },
-    /** Get specific challenge details */
-    get: async (id: number) => {
-      return (await this.request<CTFdChallenge>(`/api/v1/challenges/${id}`))
-        .data!;
-    },
-    /** Create a challenge (Admin) */
-    create: async (data: Partial<CTFdChallenge>) => {
-      return (
-        await this.request<CTFdChallenge>("/api/v1/challenges", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!;
-    },
-    /** Update a challenge (Admin) */
-    update: async (id: number, data: Partial<CTFdChallenge>) => {
-      return (
-        await this.request<CTFdChallenge>(`/api/v1/challenges/${id}`, {
-          method: "PATCH",
-          body: JSON.stringify(data),
-        })
-      ).data!;
-    },
-    /** Delete a challenge (Admin) */
-    delete: async (id: number) => {
-      return (
-        await this.request<{ success: boolean }>(`/api/v1/challenges/${id}`, {
-          method: "DELETE",
-        })
-      ).success;
-    },
-    /** Submit a flag */
-    attempt: async (challengeId: number, submission: string) => {
-      return (
-        await this.request<{ status: string; message: string }>(
-          "/api/v1/challenges/attempt",
-          {
-            method: "POST",
-            body: JSON.stringify({ challenge_id: challengeId, submission }),
-          }
-        )
-      ).data!;
-    },
-    /** Get list of challenge types available */
-    getTypes: async () =>
-      (
-        await this.request<{ type: string; name: string }[]>(
-          "/api/v1/challenges/types"
-        )
-      ).data!,
-    /** Get Solves for a challenge */
-    getSolves: async (id: number) =>
-      (await this.request<any[]>(`/api/v1/challenges/${id}/solves`)).data!,
-    /** Get Files for a challenge */
-    getFiles: async (id: number) =>
-      (await this.request<CTFdFile[]>(`/api/v1/challenges/${id}/files`)).data!,
-    /** Get Flags for a challenge */
-    getFlags: async (id: number) =>
-      (await this.request<CTFdFlag[]>(`/api/v1/challenges/${id}/flags`)).data!,
-    /** Get Hints for a challenge */
-    getHints: async (id: number) =>
-      (await this.request<CTFdHint[]>(`/api/v1/challenges/${id}/hints`)).data!,
-    /** Get Requirements for a challenge */
-    getRequirements: async (id: number) =>
-      (await this.request<any>(`/api/v1/challenges/${id}/requirements`)).data!,
-    /** Get Tags for a challenge */
-    getTags: async (id: number) =>
-      (await this.request<CTFdTag[]>(`/api/v1/challenges/${id}/tags`)).data!,
-    /** Get Topics for a challenge */
-    getTopics: async (id: number) =>
-      (await this.request<CTFdTopic[]>(`/api/v1/challenges/${id}/topics`))
-        .data!,
-  };
+  async create(
+    data: Partial<Challenge>
+  ): Promise<APISuccessResponse<Challenge>> {
+    return this.client.request("POST", "/challenges", data);
+  }
 
-  // =========================================================================
-  // Users
-  // =========================================================================
+  async update(
+    id: number,
+    data: Partial<Challenge>
+  ): Promise<APISuccessResponse<Challenge>> {
+    return this.client.request("PATCH", `/challenges/${id}`, data);
+  }
 
-  public users = {
-    list: async (
-      query: {
-        page?: number;
-        q?: string;
-        field?: string;
-        affiliation?: string;
-      } = {}
-    ) => {
-      const qs = new URLSearchParams(query as any).toString();
-      return await this.request<CTFdUser[]>(`/api/v1/users?${qs}`);
-    },
-    get: async (id: number | "me") => {
-      return (await this.request<CTFdUser>(`/api/v1/users/${id}`)).data!;
-    },
-    /** Create User (Admin) - pass ?notify=true in query if needed */
-    create: async (data: Partial<CTFdUser>, notify = false) => {
-      return (
-        await this.request<CTFdUser>(`/api/v1/users?notify=${notify}`, {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!;
-    },
-    /** Update User (Admin or 'me') */
-    update: async (id: number | "me", data: Partial<CTFdUser>) => {
-      return (
-        await this.request<CTFdUser>(`/api/v1/users/${id}`, {
-          method: "PATCH",
-          body: JSON.stringify(data),
-        })
-      ).data!;
-    },
-    delete: async (id: number) => {
-      return (await this.request(`/api/v1/users/${id}`, { method: "DELETE" }))
-        .success;
-    },
-    /** Email a user (Admin) */
-    email: async (id: number, text: string) => {
-      return (
-        await this.request(`/api/v1/users/${id}/email`, {
-          method: "POST",
-          body: JSON.stringify({ text }),
-        })
-      ).success;
-    },
-    getSolves: async (id: number | "me") =>
-      (await this.request<any[]>(`/api/v1/users/${id}/solves`)).data!,
-    getFails: async (id: number | "me") =>
-      (await this.request<any[]>(`/api/v1/users/${id}/fails`)).data!,
-    getAwards: async (id: number | "me") =>
-      (await this.request<CTFdAward[]>(`/api/v1/users/${id}/awards`)).data!,
-    getSubmissions: async (id: "me") =>
-      (await this.request<CTFdSubmission[]>(`/api/v1/users/${id}/submissions`))
-        .data!,
-  };
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/challenges/${id}`);
+  }
 
-  // =========================================================================
-  // Teams
-  // =========================================================================
+  async attempt(
+    challengeId: number,
+    submission: string
+  ): Promise<APISuccessResponse<{ status: string; message: string }>> {
+    return this.client.request("POST", "/challenges/attempt", {
+      challenge_id: challengeId,
+      submission: submission,
+    });
+  }
 
-  public teams = {
-    list: async (query: { page?: number; q?: string; field?: string } = {}) => {
-      const qs = new URLSearchParams(query as any).toString();
-      return await this.request<CTFdTeam[]>(`/api/v1/teams?${qs}`);
-    },
-    get: async (id: number | "me") => {
-      return (await this.request<CTFdTeam>(`/api/v1/teams/${id}`)).data!;
-    },
-    create: async (data: Partial<CTFdTeam>) => {
-      return (
-        await this.request<CTFdTeam>("/api/v1/teams", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!;
-    },
-    update: async (id: number | "me", data: Partial<CTFdTeam>) => {
-      return (
-        await this.request<CTFdTeam>(`/api/v1/teams/${id}`, {
-          method: "PATCH",
-          body: JSON.stringify(data),
-        })
-      ).data!;
-    },
-    delete: async (id: number | "me") => {
-      return (await this.request(`/api/v1/teams/${id}`, { method: "DELETE" }))
-        .success;
-    },
-    getSolves: async (id: number | "me") =>
-      (await this.request<any[]>(`/api/v1/teams/${id}/solves`)).data!,
-    getFails: async (id: number | "me") =>
-      (await this.request<any[]>(`/api/v1/teams/${id}/fails`)).data!,
-    getAwards: async (id: number | "me") =>
-      (await this.request<CTFdAward[]>(`/api/v1/teams/${id}/awards`)).data!,
-    getMembers: async (id: number | "me") =>
-      (await this.request<number[]>(`/api/v1/teams/${id}/members`)).data!,
-    /** Remove member from team */
-    removeMember: async (teamId: number, userId: number) => {
-      return (
-        await this.request(`/api/v1/teams/${teamId}/members`, {
-          method: "DELETE",
-          body: JSON.stringify({ user_id: userId }),
-        })
-      ).success;
-    },
-  };
+  async getTypes(): Promise<APISuccessResponse<Record<string, any>>> {
+    return this.client.request("GET", "/challenges/types");
+  }
 
-  // =========================================================================
-  // Scoreboard
-  // =========================================================================
+  async getSolves(id: number): Promise<APISuccessResponse<any[]>> {
+    return this.client.request("GET", `/challenges/${id}/solves`);
+  }
 
-  public scoreboard = {
-    get: async () => (await this.request<any[]>("/api/v1/scoreboard")).data!,
-    getTop: async (count: number) =>
-      (await this.request<any>(`/api/v1/scoreboard/top/${count}`)).data!,
-  };
+  async getFiles(id: number): Promise<APISuccessResponse<File[]>> {
+    return this.client.request("GET", `/challenges/${id}/files`);
+  }
 
-  // =========================================================================
-  // Submissions (Review)
-  // =========================================================================
+  async getFlags(id: number): Promise<APISuccessResponse<Flag[]>> {
+    return this.client.request("GET", `/challenges/${id}/flags`);
+  }
 
-  public submissions = {
-    list: async (
-      query: {
-        challenge_id?: number;
-        user_id?: number;
-        team_id?: number;
-        type?: string;
-        q?: string;
-      } = {}
-    ) => {
-      const qs = new URLSearchParams(query as any).toString();
-      return await this.request<CTFdSubmission[]>(`/api/v1/submissions?${qs}`);
-    },
-    get: async (id: number) =>
-      (await this.request<CTFdSubmission>(`/api/v1/submissions/${id}`)).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/submissions/${id}`, { method: "DELETE" }))
-        .success,
-  };
+  async getHints(id: number): Promise<APISuccessResponse<Hint[]>> {
+    return this.client.request("GET", `/challenges/${id}/hints`);
+  }
 
-  // =========================================================================
-  // Awards
-  // =========================================================================
+  async getTags(id: number): Promise<APISuccessResponse<Tag[]>> {
+    return this.client.request("GET", `/challenges/${id}/tags`);
+  }
+}
 
-  public awards = {
-    list: async (
-      query: { user_id?: number; team_id?: number; q?: string } = {}
-    ) => {
-      const qs = new URLSearchParams(query as any).toString();
-      return (await this.request<CTFdAward[]>(`/api/v1/awards?${qs}`)).data!;
-    },
-    get: async (id: number) =>
-      (await this.request<CTFdAward>(`/api/v1/awards/${id}`)).data!,
-    create: async (data: Partial<CTFdAward>) =>
-      (
-        await this.request<CTFdAward>("/api/v1/awards", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/awards/${id}`, { method: "DELETE" }))
-        .success,
-  };
+export class UsersResource extends BaseResource {
+  async list(params?: UserSearchParams): Promise<APIPaginatedResponse<User>> {
+    return this.client.request("GET", "/users", undefined, params);
+  }
 
-  // =========================================================================
-  // Files
-  // =========================================================================
+  async get(id: number): Promise<APISuccessResponse<User>> {
+    return this.client.request("GET", `/users/${id}`);
+  }
 
-  public files = {
-    list: async (
-      query: { type?: string; location?: string; q?: string } = {}
-    ) => {
-      const qs = new URLSearchParams(query as any).toString();
-      return (await this.request<CTFdFile[]>(`/api/v1/files?${qs}`)).data!;
-    },
-    get: async (id: number) =>
-      (await this.request<CTFdFile>(`/api/v1/files/${id}`)).data!,
-    /**
-     * Upload a file.
-     * @param file The file object (Blob/File in browser, Buffer/Stream logic depends on environment, standard usage usually FormData compatible)
-     * @param params Metadata like challenge_id, page_id, etc.
-     */
-    create: async (
-      file: Blob | File,
-      params: {
-        challenge_id?: number;
-        page_id?: number;
-        type?: string;
-        location?: string;
-      }
-    ) => {
-      const formData = new FormData();
-      formData.append("file", file);
-      if (params.challenge_id)
-        formData.append("challenge_id", params.challenge_id.toString());
-      if (params.page_id) formData.append("page_id", params.page_id.toString());
-      if (params.type) formData.append("type", params.type);
-      if (params.location) formData.append("location", params.location);
+  async create(
+    data: Partial<User>,
+    notify?: boolean
+  ): Promise<APISuccessResponse<User>> {
+    return this.client.request("POST", "/users", data, { notify });
+  }
 
-      return (
-        await this.request<CTFdFile>("/api/v1/files", {
-          method: "POST",
-          body: formData,
-        })
-      ).data!;
-    },
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/files/${id}`, { method: "DELETE" })).success,
-  };
+  async update(
+    id: number,
+    data: Partial<User>
+  ): Promise<APISuccessResponse<User>> {
+    return this.client.request("PATCH", `/users/${id}`, data);
+  }
 
-  // =========================================================================
-  // Pages
-  // =========================================================================
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/users/${id}`);
+  }
 
-  public pages = {
-    list: async (
-      query: { draft?: boolean; hidden?: boolean; q?: string } = {}
-    ) => {
-      const qs = new URLSearchParams(query as any).toString();
-      return (await this.request<CTFdPage[]>(`/api/v1/pages?${qs}`)).data!;
-    },
-    get: async (id: number) =>
-      (await this.request<CTFdPage>(`/api/v1/pages/${id}`)).data!,
-    create: async (data: Partial<CTFdPage>) =>
-      (
-        await this.request<CTFdPage>("/api/v1/pages", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    update: async (id: number, data: Partial<CTFdPage>) =>
-      (
-        await this.request<CTFdPage>(`/api/v1/pages/${id}`, {
-          method: "PATCH",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/pages/${id}`, { method: "DELETE" })).success,
-  };
+  async getMe(): Promise<APISuccessResponse<User>> {
+    return this.client.request("GET", "/users/me");
+  }
 
-  // =========================================================================
-  // Notifications
-  // =========================================================================
+  async updateMe(data: Partial<User>): Promise<APISuccessResponse<User>> {
+    return this.client.request("PATCH", "/users/me", data);
+  }
 
-  public notifications = {
-    list: async (query: { since_id?: number; q?: string } = {}) => {
-      const qs = new URLSearchParams(query as any).toString();
-      return (
-        await this.request<CTFdNotification[]>(`/api/v1/notifications?${qs}`)
-      ).data!;
-    },
-    create: async (data: Partial<CTFdNotification>) =>
-      (
-        await this.request<CTFdNotification>("/api/v1/notifications", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/notifications/${id}`, { method: "DELETE" }))
-        .success,
-  };
+  async getSolves(id: number | "me"): Promise<APISuccessResponse<any[]>> {
+    return this.client.request("GET", `/users/${id}/solves`);
+  }
 
-  // =========================================================================
-  // Configs
-  // =========================================================================
+  async getFails(id: number | "me"): Promise<APISuccessResponse<any[]>> {
+    return this.client.request("GET", `/users/${id}/fails`);
+  }
 
-  public configs = {
-    list: async (query: { key?: string; value?: string; q?: string } = {}) => {
-      const qs = new URLSearchParams(query as any).toString();
-      return (await this.request<CTFdConfig[]>(`/api/v1/configs?${qs}`)).data!;
-    },
-    get: async (key: string) =>
-      (await this.request<CTFdConfig>(`/api/v1/configs/${key}`)).data!,
-    create: async (data: CTFdConfig) =>
-      (
-        await this.request<CTFdConfig>("/api/v1/configs", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    update: async (key: string, value: string) =>
-      (
-        await this.request<CTFdConfig>(`/api/v1/configs/${key}`, {
-          method: "PATCH",
-          body: JSON.stringify({ value }),
-        })
-      ).data!,
-    delete: async (key: string) =>
-      (await this.request(`/api/v1/configs/${key}`, { method: "DELETE" }))
-        .success,
-  };
+  async getAwards(id: number | "me"): Promise<APISuccessResponse<Award[]>> {
+    return this.client.request("GET", `/users/${id}/awards`);
+  }
 
-  // =========================================================================
-  // Statistics
-  // =========================================================================
+  async email(id: number, text: string): Promise<APISuccessResponse<null>> {
+    return this.client.request("POST", `/users/${id}/email`, { text });
+  }
+}
 
-  public statistics = {
-    challenges: {
-      solves: async () =>
-        (await this.request<any>("/api/v1/statistics/challenges/solves")).data!,
-      percentages: async () =>
-        (
-          await this.request<any>(
-            "/api/v1/statistics/challenges/solves/percentages"
-          )
-        ).data!,
-      propertyCounts: async (column: string) =>
-        (await this.request<any>(`/api/v1/statistics/challenges/${column}`))
-          .data!,
-    },
-    scores: {
-      distribution: async () =>
-        (await this.request<any>("/api/v1/statistics/scores/distribution"))
-          .data!,
-    },
-    teams: async () =>
-      (await this.request<any>("/api/v1/statistics/teams")).data!,
-    users: {
-      general: async () =>
-        (await this.request<any>("/api/v1/statistics/users")).data!,
-      propertyCounts: async (column: string) =>
-        (await this.request<any>(`/api/v1/statistics/users/${column}`)).data!,
-    },
-    submissions: {
-      propertyCounts: async (column: string) =>
-        (await this.request<any>(`/api/v1/statistics/submissions/${column}`))
-          .data!,
-    },
-  };
+export class TeamsResource extends BaseResource {
+  async list(params?: TeamSearchParams): Promise<APIPaginatedResponse<Team>> {
+    return this.client.request("GET", "/teams", undefined, params);
+  }
 
-  // =========================================================================
-  // System / Misc (Flags, Hints, Tags, Topics, Unlocks, Tokens)
-  // =========================================================================
+  async get(id: number): Promise<APISuccessResponse<Team>> {
+    return this.client.request("GET", `/teams/${id}`);
+  }
 
-  public flags = {
-    list: async (query?: any) =>
-      (
-        await this.request<CTFdFlag[]>(
-          `/api/v1/flags?${new URLSearchParams(query)}`
-        )
-      ).data!,
-    create: async (data: Partial<CTFdFlag>) =>
-      (
-        await this.request<CTFdFlag>("/api/v1/flags", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    update: async (id: number, data: Partial<CTFdFlag>) =>
-      (
-        await this.request<CTFdFlag>(`/api/v1/flags/${id}`, {
-          method: "PATCH",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/flags/${id}`, { method: "DELETE" })).success,
-    getTypes: async () => (await this.request<any>("/api/v1/flags/types")).data,
-  };
+  async create(data: Partial<Team>): Promise<APISuccessResponse<Team>> {
+    return this.client.request("POST", "/teams", data);
+  }
 
-  public hints = {
-    list: async (query?: any) =>
-      (
-        await this.request<CTFdHint[]>(
-          `/api/v1/hints?${new URLSearchParams(query)}`
-        )
-      ).data!,
-    create: async (data: Partial<CTFdHint>) =>
-      (
-        await this.request<CTFdHint>("/api/v1/hints", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    update: async (id: number, data: Partial<CTFdHint>) =>
-      (
-        await this.request<CTFdHint>(`/api/v1/hints/${id}`, {
-          method: "PATCH",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/hints/${id}`, { method: "DELETE" })).success,
-  };
+  async update(
+    id: number,
+    data: Partial<Team>
+  ): Promise<APISuccessResponse<Team>> {
+    return this.client.request("PATCH", `/teams/${id}`, data);
+  }
 
-  public tags = {
-    list: async (query?: any) =>
-      (
-        await this.request<CTFdTag[]>(
-          `/api/v1/tags?${new URLSearchParams(query)}`
-        )
-      ).data!,
-    create: async (data: Partial<CTFdTag>) =>
-      (
-        await this.request<CTFdTag>("/api/v1/tags", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    update: async (id: number, data: Partial<CTFdTag>) =>
-      (
-        await this.request<CTFdTag>(`/api/v1/tags/${id}`, {
-          method: "PATCH",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/tags/${id}`, { method: "DELETE" })).success,
-  };
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/teams/${id}`);
+  }
 
-  public topics = {
-    list: async (query?: any) =>
-      (
-        await this.request<CTFdTopic[]>(
-          `/api/v1/topics?${new URLSearchParams(query)}`
-        )
-      ).data!,
-    create: async (data: Partial<CTFdTopic>) =>
-      (
-        await this.request<CTFdTopic>("/api/v1/topics", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/topics/${id}`, { method: "DELETE" }))
-        .success,
-  };
+  async getMe(): Promise<APISuccessResponse<Team>> {
+    return this.client.request("GET", "/teams/me");
+  }
 
-  public unlocks = {
-    list: async (query?: any) =>
-      (
-        await this.request<any[]>(
-          `/api/v1/unlocks?${new URLSearchParams(query)}`
-        )
-      ).data!,
-    create: async (targetId: number, type: "hints" | "solutions") => {
-      return await this.request<{ success: boolean; errors?: any }>(
-        "/api/v1/unlocks",
-        {
-          method: "POST",
-          body: JSON.stringify({ target: targetId, type }),
-        }
-      );
-    },
-  };
+  async updateMe(data: Partial<Team>): Promise<APISuccessResponse<Team>> {
+    return this.client.request("PATCH", "/teams/me", data);
+  }
 
-  public tokens = {
-    list: async () => (await this.request<CTFdToken[]>("/api/v1/tokens")).data!,
-    create: async (data: { expiration?: string; description?: string }) =>
-      (
-        await this.request<CTFdToken>("/api/v1/tokens", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/tokens/${id}`, { method: "DELETE" }))
-        .success,
-  };
+  async getSolves(id: number | "me"): Promise<APISuccessResponse<any[]>> {
+    return this.client.request("GET", `/teams/${id}/solves`);
+  }
 
-  public solutions = {
-    list: async (query?: any) =>
-      (
-        await this.request<CTFdSolution[]>(
-          `/api/v1/solutions?${new URLSearchParams(query)}`
-        )
-      ).data!,
-    create: async (data: Partial<CTFdSolution>) =>
-      (
-        await this.request<CTFdSolution>("/api/v1/solutions", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    update: async (id: number, data: Partial<CTFdSolution>) =>
-      (
-        await this.request<CTFdSolution>(`/api/v1/solutions/${id}`, {
-          method: "PATCH",
-          body: JSON.stringify(data),
-        })
-      ).data!,
-    delete: async (id: number) =>
-      (await this.request(`/api/v1/solutions/${id}`, { method: "DELETE" }))
-        .success,
-  };
+  async getFails(id: number | "me"): Promise<APISuccessResponse<any[]>> {
+    return this.client.request("GET", `/teams/${id}/fails`);
+  }
+
+  async getAwards(id: number | "me"): Promise<APISuccessResponse<Award[]>> {
+    return this.client.request("GET", `/teams/${id}/awards`);
+  }
+
+  async getMembers(id: number): Promise<APISuccessResponse<User[]>> {
+    return this.client.request("GET", `/teams/${id}/members`);
+  }
+}
+
+export class SubmissionsResource extends BaseResource {
+  async list(
+    params?: SubmissionSearchParams
+  ): Promise<APIPaginatedResponse<Submission>> {
+    return this.client.request("GET", "/submissions", undefined, params);
+  }
+
+  // NOTE: 'create' usually refers to Admin creating a record, not a user solving a challenge (see challenges.attempt)
+  async create(
+    data: Partial<Submission>
+  ): Promise<APISuccessResponse<Submission>> {
+    return this.client.request("POST", "/submissions", data);
+  }
+
+  async get(id: number): Promise<APISuccessResponse<Submission>> {
+    return this.client.request("GET", `/submissions/${id}`);
+  }
+
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/submissions/${id}`);
+  }
+}
+
+export class ScoreboardResource extends BaseResource {
+  async get(): Promise<APISuccessResponse<any[]>> {
+    return this.client.request("GET", "/scoreboard");
+  }
+
+  async getTop(count: number): Promise<APISuccessResponse<any>> {
+    return this.client.request("GET", `/scoreboard/top/${count}`);
+  }
+}
+
+export class ConfigsResource extends BaseResource {
+  async list(params?: {
+    key?: string;
+    value?: string;
+  }): Promise<APIPaginatedResponse<Config>> {
+    return this.client.request("GET", "/configs", undefined, params);
+  }
+
+  async get(key: string): Promise<APISuccessResponse<Config>> {
+    return this.client.request("GET", `/configs/${key}`);
+  }
+
+  async create(data: {
+    key: string;
+    value: string;
+  }): Promise<APISuccessResponse<Config>> {
+    return this.client.request("POST", "/configs", data);
+  }
+
+  async update(
+    key: string,
+    value: string
+  ): Promise<APISuccessResponse<Config>> {
+    return this.client.request("PATCH", `/configs/${key}`, { value });
+  }
+
+  async delete(key: string): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/configs/${key}`);
+  }
+}
+
+export class NotificationsResource extends BaseResource {
+  async list(params?: {
+    title?: string;
+    content?: string;
+  }): Promise<APIPaginatedResponse<Notification>> {
+    return this.client.request("GET", "/notifications", undefined, params);
+  }
+
+  async create(
+    data: Partial<Notification>
+  ): Promise<APISuccessResponse<Notification>> {
+    return this.client.request("POST", "/notifications", data);
+  }
+
+  async get(id: number): Promise<APISuccessResponse<Notification>> {
+    return this.client.request("GET", `/notifications/${id}`);
+  }
+
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/notifications/${id}`);
+  }
+}
+
+export class PagesResource extends BaseResource {
+  async list(params?: any): Promise<APIPaginatedResponse<Page>> {
+    return this.client.request("GET", "/pages", undefined, params);
+  }
+
+  async create(data: Partial<Page>): Promise<APISuccessResponse<Page>> {
+    return this.client.request("POST", "/pages", data);
+  }
+
+  async get(id: number): Promise<APISuccessResponse<Page>> {
+    return this.client.request("GET", `/pages/${id}`);
+  }
+
+  async update(
+    id: number,
+    data: Partial<Page>
+  ): Promise<APISuccessResponse<Page>> {
+    return this.client.request("PATCH", `/pages/${id}`, data);
+  }
+
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/pages/${id}`);
+  }
+}
+
+export class FlagsResource extends BaseResource {
+  async list(params?: {
+    challenge_id?: number;
+    type?: string;
+  }): Promise<APIPaginatedResponse<Flag>> {
+    return this.client.request("GET", "/flags", undefined, params);
+  }
+
+  async create(data: Partial<Flag>): Promise<APISuccessResponse<Flag>> {
+    return this.client.request("POST", "/flags", data);
+  }
+
+  async get(id: number): Promise<APISuccessResponse<Flag>> {
+    return this.client.request("GET", `/flags/${id}`);
+  }
+
+  async update(
+    id: number,
+    data: Partial<Flag>
+  ): Promise<APISuccessResponse<Flag>> {
+    return this.client.request("PATCH", `/flags/${id}`, data);
+  }
+
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/flags/${id}`);
+  }
+
+  async getTypes(): Promise<APISuccessResponse<Record<string, any>>> {
+    return this.client.request("GET", "/flags/types");
+  }
+}
+
+export class HintsResource extends BaseResource {
+  async list(params?: {
+    challenge_id?: number;
+  }): Promise<APIPaginatedResponse<Hint>> {
+    return this.client.request("GET", "/hints", undefined, params);
+  }
+
+  async create(data: Partial<Hint>): Promise<APISuccessResponse<Hint>> {
+    return this.client.request("POST", "/hints", data);
+  }
+
+  async get(id: number): Promise<APISuccessResponse<Hint>> {
+    return this.client.request("GET", `/hints/${id}`);
+  }
+
+  async update(
+    id: number,
+    data: Partial<Hint>
+  ): Promise<APISuccessResponse<Hint>> {
+    return this.client.request("PATCH", `/hints/${id}`, data);
+  }
+
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/hints/${id}`);
+  }
+}
+
+export class FilesResource extends BaseResource {
+  async list(params?: {
+    type?: string;
+    location?: string;
+  }): Promise<APIPaginatedResponse<File>> {
+    return this.client.request("GET", "/files", undefined, params);
+  }
+
+  // File uploading usually requires FormData, handling partial here for metadata
+  async create(data: any): Promise<APISuccessResponse<File>> {
+    return this.client.request("POST", "/files", data);
+  }
+
+  async get(id: number): Promise<APISuccessResponse<File>> {
+    return this.client.request("GET", `/files/${id}`);
+  }
+
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/files/${id}`);
+  }
+}
+
+export class AwardsResource extends BaseResource {
+  async list(params?: {
+    user_id?: number;
+    team_id?: number;
+  }): Promise<APIPaginatedResponse<Award>> {
+    return this.client.request("GET", "/awards", undefined, params);
+  }
+
+  async create(data: Partial<Award>): Promise<APISuccessResponse<Award>> {
+    return this.client.request("POST", "/awards", data);
+  }
+
+  async get(id: number): Promise<APISuccessResponse<Award>> {
+    return this.client.request("GET", `/awards/${id}`);
+  }
+
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/awards/${id}`);
+  }
+}
+
+export class TagsResource extends BaseResource {
+  async list(params?: {
+    challenge_id?: number;
+  }): Promise<APIPaginatedResponse<Tag>> {
+    return this.client.request("GET", "/tags", undefined, params);
+  }
+
+  async create(data: Partial<Tag>): Promise<APISuccessResponse<Tag>> {
+    return this.client.request("POST", "/tags", data);
+  }
+
+  async get(id: number): Promise<APISuccessResponse<Tag>> {
+    return this.client.request("GET", `/tags/${id}`);
+  }
+
+  async update(
+    id: number,
+    data: Partial<Tag>
+  ): Promise<APISuccessResponse<Tag>> {
+    return this.client.request("PATCH", `/tags/${id}`, data);
+  }
+
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/tags/${id}`);
+  }
+}
+
+export class TokensResource extends BaseResource {
+  async list(): Promise<APIPaginatedResponse<Token>> {
+    return this.client.request("GET", "/tokens");
+  }
+
+  async create(data: Partial<Token>): Promise<APISuccessResponse<Token>> {
+    return this.client.request("POST", "/tokens", data);
+  }
+
+  async get(id: number): Promise<APISuccessResponse<Token>> {
+    return this.client.request("GET", `/tokens/${id}`);
+  }
+
+  async delete(id: number): Promise<APISuccessResponse<null>> {
+    return this.client.request("DELETE", `/tokens/${id}`);
+  }
+}
+
+export class UnlocksResource extends BaseResource {
+  async list(params?: {
+    user_id?: number;
+    team_id?: number;
+    target?: number;
+    type?: string;
+  }): Promise<APIPaginatedResponse<Unlock>> {
+    return this.client.request("GET", "/unlocks", undefined, params);
+  }
+
+  async create(data: Partial<Unlock>): Promise<APISuccessResponse<Unlock>> {
+    return this.client.request("POST", "/unlocks", data);
+  }
+}
+
+export class StatisticsResource extends BaseResource {
+  async getChallengeSolves(): Promise<APISuccessResponse<any>> {
+    return this.client.request("GET", "/statistics/challenges/solves");
+  }
+
+  async getChallengeSolvePercentages(): Promise<APISuccessResponse<any>> {
+    return this.client.request(
+      "GET",
+      "/statistics/challenges/solves/percentages"
+    );
+  }
+
+  async getChallengePropertyCounts(
+    column: string
+  ): Promise<APISuccessResponse<any>> {
+    return this.client.request("GET", `/statistics/challenges/${column}`);
+  }
+
+  async getScoreDistribution(): Promise<APISuccessResponse<any>> {
+    return this.client.request("GET", "/statistics/scores/distribution");
+  }
+
+  async getSubmissionPropertyCounts(
+    column: string
+  ): Promise<APISuccessResponse<any>> {
+    return this.client.request("GET", `/statistics/submissions/${column}`);
+  }
+
+  async getTeamStatistics(): Promise<APISuccessResponse<any>> {
+    return this.client.request("GET", "/statistics/teams");
+  }
+
+  async getUserStatistics(): Promise<APISuccessResponse<any>> {
+    return this.client.request("GET", "/statistics/users");
+  }
+
+  async getUserPropertyCounts(
+    column: string
+  ): Promise<APISuccessResponse<any>> {
+    return this.client.request("GET", `/statistics/users/${column}`);
+  }
 }

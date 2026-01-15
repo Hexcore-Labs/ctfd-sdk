@@ -1,146 +1,77 @@
 /**
- * CTFd API Client SDK
- * Generated based on CTFd Swagger/OpenAPI 2.0 Definition (v1)
- *
- * Designed for Server-Side usage (Next.js Server Actions, Node.js).
- * Includes Public, User, and Admin API endpoints.
+ * CTFd TypeScript SDK
+ * Generated based on CTFd v3 API Specification
  */
-export interface CTFdResponse<T = any> {
-    success: boolean;
-    data?: T;
-    errors?: string[];
-    message?: string;
-    meta?: {
-        pagination?: {
+export interface APISuccessResponse<T> {
+    success: true;
+    data: T;
+}
+export interface APIPaginatedResponse<T> {
+    success: true;
+    data: T[];
+    meta: {
+        pagination: {
             page: number;
-            next?: number;
-            prev?: number;
+            next: number | null;
+            prev: number | null;
             pages: number;
             per_page: number;
             total: number;
         };
     };
 }
-export interface CTFdChallenge {
+export interface APIErrorResponse {
+    success: false;
+    errors: string[];
+}
+export type APIResponse<T> = APISuccessResponse<T> | APIPaginatedResponse<T>;
+export interface User {
     id: number;
     name: string;
-    value: number;
+    email?: string;
+    type?: string;
+    oauth_id?: number;
+    team_id?: number;
+    website?: string;
+    affiliation?: string;
+    country?: string;
+    bracket?: string;
+    hidden?: boolean;
+    banned?: boolean;
+    verified?: boolean;
+    created?: string;
+}
+export interface Team {
+    id: number;
+    name: string;
+    email?: string;
+    oauth_id?: number;
+    captain_id?: number;
+    website?: string;
+    affiliation?: string;
+    country?: string;
+    bracket?: string;
+    hidden?: boolean;
+    banned?: boolean;
+    created?: string;
+    secret?: string;
+}
+export interface Challenge {
+    id: number;
+    name: string;
+    description: string;
     category: string;
+    value: number;
     type: string;
     state: string;
-    description?: string;
-    connection_info?: string;
     max_attempts?: number;
+    requirements?: any;
+    connection_info?: string;
     next_id?: number;
-    attribution?: string;
-    solves?: number;
+    files?: string[];
     solved_by_me?: boolean;
-    requirements?: any;
-    [key: string]: any;
 }
-export interface CTFdTeam {
-    id: number;
-    name: string;
-    email?: string;
-    score?: number;
-    admin?: boolean;
-    banned?: boolean;
-    hidden?: boolean;
-    country?: string;
-    affiliation?: string;
-    website?: string;
-    captain_id?: number;
-    oauth_id?: number;
-    bracket_id?: number;
-    members?: number[];
-    created?: string;
-    [key: string]: any;
-}
-export interface CTFdUser {
-    id: number;
-    name: string;
-    email?: string;
-    score?: number;
-    type?: string;
-    admin?: boolean;
-    banned?: boolean;
-    hidden?: boolean;
-    verified?: boolean;
-    country?: string;
-    affiliation?: string;
-    website?: string;
-    oauth_id?: number;
-    team_id?: number;
-    bracket_id?: number;
-    created?: string;
-    [key: string]: any;
-}
-export interface CTFdAward {
-    id: number;
-    user_id?: number;
-    team_id?: number;
-    name?: string;
-    description?: string;
-    value: number;
-    category?: string;
-    icon?: string;
-    date?: string;
-    requirements?: any;
-}
-export interface CTFdTag {
-    id: number;
-    challenge_id: number;
-    value: string;
-}
-export interface CTFdTopic {
-    id: number;
-    value: string;
-}
-export interface CTFdHint {
-    id: number;
-    challenge_id: number;
-    content: string;
-    cost: number;
-    type: string;
-    requirements?: any;
-}
-export interface CTFdFlag {
-    id: number;
-    challenge_id: number;
-    content: string;
-    type: string;
-    data?: string;
-}
-export interface CTFdFile {
-    id: number;
-    type: string;
-    location: string;
-    sha1sum?: string;
-}
-export interface CTFdNotification {
-    id: number;
-    title: string;
-    content: string;
-    date: string;
-    user_id?: number;
-    team_id?: number;
-}
-export interface CTFdPage {
-    id: number;
-    title: string;
-    route: string;
-    content: string;
-    draft: boolean;
-    hidden: boolean;
-    auth_required: boolean;
-    format: string;
-}
-export interface CTFdConfig {
-    id: number;
-    key: string;
-    value: string;
-}
-export interface CTFdSubmission {
+export interface Submission {
     id: number;
     challenge_id: number;
     user_id: number;
@@ -150,252 +81,298 @@ export interface CTFdSubmission {
     type: string;
     date: string;
 }
-export interface CTFdSolution {
+export interface Config {
+    id: number;
+    key: string;
+    value: string;
+}
+export interface Notification {
+    id: number;
+    title: string;
+    content: string;
+    date: string;
+    user_id?: number;
+    team_id?: number;
+}
+export interface Page {
+    id: number;
+    title: string;
+    route: string;
+    content: string;
+    draft: boolean;
+    hidden: boolean;
+    auth_required: boolean;
+}
+export interface Flag {
+    id: number;
+    challenge_id: number;
+    type: string;
+    content: string;
+    data?: string;
+}
+export interface Hint {
     id: number;
     challenge_id: number;
     content: string;
-    state: string;
+    cost: number;
+    type: string;
+    requirements?: any;
 }
-export interface CTFdToken {
+export interface Award {
+    id: number;
+    user_id?: number;
+    team_id?: number;
+    name: string;
+    description?: string;
+    value: number;
+    category?: string;
+    icon?: string;
+    date: string;
+    requirements?: any;
+}
+export interface File {
+    id: number;
+    type: string;
+    location: string;
+}
+export interface Tag {
+    id: number;
+    challenge_id: number;
+    value: string;
+}
+export interface Token {
     id: number;
     type: string;
     user_id: number;
+    value?: string;
     created: string;
     expiration: string;
-    description?: string;
-    value?: string;
 }
-export interface CTFdClientOptions {
-    /** The base URL of the CTFd instance (e.g., https://demo.ctfd.io) */
-    url: string;
-    /** API Access Token generated in CTFd Settings */
-    apiKey?: string;
-    /** Session cookie (if not using API Key) */
-    sessionCookie?: string;
-    /** CSRF Token (required if using sessionCookie for state-changing requests) */
-    csrfToken?: string;
+export interface Unlock {
+    id: number;
+    user_id: number;
+    team_id?: number;
+    target: number;
+    type: string;
+    date: string;
+}
+export interface PaginationParams {
+    page?: number;
+    per_page?: number;
+}
+export interface ChallengeSearchParams extends PaginationParams {
+    name?: string;
+    max_attempts?: number;
+    value?: number;
+    category?: string;
+    type?: string;
+    state?: string;
+    q?: string;
+    field?: "name" | "description" | "category" | "type" | "state";
+}
+export interface UserSearchParams extends PaginationParams {
+    affiliation?: string;
+    country?: string;
+    bracket?: string;
+    q?: string;
+    field?: "name" | "website" | "country" | "bracket" | "affiliation";
+}
+export interface TeamSearchParams extends PaginationParams {
+    affiliation?: string;
+    country?: string;
+    bracket?: string;
+    q?: string;
+    field?: "name" | "website" | "country" | "bracket" | "affiliation";
+}
+export interface SubmissionSearchParams extends PaginationParams {
+    challenge_id?: number;
+    user_id?: number;
+    team_id?: number;
+    ip?: string;
+    provided?: string;
+    type?: string;
+    q?: string;
+    field?: "challenge_id" | "user_id" | "team_id" | "ip" | "provided" | "type";
 }
 export declare class CTFdClient {
-    private baseUrl;
+    private baseURL;
+    private accessToken;
     private headers;
-    constructor(options: CTFdClientOptions);
-    /**
-     * Internal fetch wrapper
-     */
-    private request;
-    challenges: {
-        /** List challenges (public or admin view depending on auth) */
-        list: (query?: Partial<CTFdChallenge> & {
-            q?: string;
-            field?: string;
-            view?: "admin" | "user";
-        }) => Promise<CTFdChallenge[]>;
-        /** Get specific challenge details */
-        get: (id: number) => Promise<CTFdChallenge>;
-        /** Create a challenge (Admin) */
-        create: (data: Partial<CTFdChallenge>) => Promise<CTFdChallenge>;
-        /** Update a challenge (Admin) */
-        update: (id: number, data: Partial<CTFdChallenge>) => Promise<CTFdChallenge>;
-        /** Delete a challenge (Admin) */
-        delete: (id: number) => Promise<boolean>;
-        /** Submit a flag */
-        attempt: (challengeId: number, submission: string) => Promise<{
-            status: string;
-            message: string;
-        }>;
-        /** Get list of challenge types available */
-        getTypes: () => Promise<{
-            type: string;
-            name: string;
-        }[]>;
-        /** Get Solves for a challenge */
-        getSolves: (id: number) => Promise<any[]>;
-        /** Get Files for a challenge */
-        getFiles: (id: number) => Promise<CTFdFile[]>;
-        /** Get Flags for a challenge */
-        getFlags: (id: number) => Promise<CTFdFlag[]>;
-        /** Get Hints for a challenge */
-        getHints: (id: number) => Promise<CTFdHint[]>;
-        /** Get Requirements for a challenge */
-        getRequirements: (id: number) => Promise<any>;
-        /** Get Tags for a challenge */
-        getTags: (id: number) => Promise<CTFdTag[]>;
-        /** Get Topics for a challenge */
-        getTopics: (id: number) => Promise<CTFdTopic[]>;
-    };
-    users: {
-        list: (query?: {
-            page?: number;
-            q?: string;
-            field?: string;
-            affiliation?: string;
-        }) => Promise<CTFdResponse<CTFdUser[]>>;
-        get: (id: number | "me") => Promise<CTFdUser>;
-        /** Create User (Admin) - pass ?notify=true in query if needed */
-        create: (data: Partial<CTFdUser>, notify?: boolean) => Promise<CTFdUser>;
-        /** Update User (Admin or 'me') */
-        update: (id: number | "me", data: Partial<CTFdUser>) => Promise<CTFdUser>;
-        delete: (id: number) => Promise<boolean>;
-        /** Email a user (Admin) */
-        email: (id: number, text: string) => Promise<boolean>;
-        getSolves: (id: number | "me") => Promise<any[]>;
-        getFails: (id: number | "me") => Promise<any[]>;
-        getAwards: (id: number | "me") => Promise<CTFdAward[]>;
-        getSubmissions: (id: "me") => Promise<CTFdSubmission[]>;
-    };
-    teams: {
-        list: (query?: {
-            page?: number;
-            q?: string;
-            field?: string;
-        }) => Promise<CTFdResponse<CTFdTeam[]>>;
-        get: (id: number | "me") => Promise<CTFdTeam>;
-        create: (data: Partial<CTFdTeam>) => Promise<CTFdTeam>;
-        update: (id: number | "me", data: Partial<CTFdTeam>) => Promise<CTFdTeam>;
-        delete: (id: number | "me") => Promise<boolean>;
-        getSolves: (id: number | "me") => Promise<any[]>;
-        getFails: (id: number | "me") => Promise<any[]>;
-        getAwards: (id: number | "me") => Promise<CTFdAward[]>;
-        getMembers: (id: number | "me") => Promise<number[]>;
-        /** Remove member from team */
-        removeMember: (teamId: number, userId: number) => Promise<boolean>;
-    };
-    scoreboard: {
-        get: () => Promise<any[]>;
-        getTop: (count: number) => Promise<any>;
-    };
-    submissions: {
-        list: (query?: {
-            challenge_id?: number;
-            user_id?: number;
-            team_id?: number;
-            type?: string;
-            q?: string;
-        }) => Promise<CTFdResponse<CTFdSubmission[]>>;
-        get: (id: number) => Promise<CTFdSubmission>;
-        delete: (id: number) => Promise<boolean>;
-    };
-    awards: {
-        list: (query?: {
-            user_id?: number;
-            team_id?: number;
-            q?: string;
-        }) => Promise<CTFdAward[]>;
-        get: (id: number) => Promise<CTFdAward>;
-        create: (data: Partial<CTFdAward>) => Promise<CTFdAward>;
-        delete: (id: number) => Promise<boolean>;
-    };
-    files: {
-        list: (query?: {
-            type?: string;
-            location?: string;
-            q?: string;
-        }) => Promise<CTFdFile[]>;
-        get: (id: number) => Promise<CTFdFile>;
-        /**
-         * Upload a file.
-         * @param file The file object (Blob/File in browser, Buffer/Stream logic depends on environment, standard usage usually FormData compatible)
-         * @param params Metadata like challenge_id, page_id, etc.
-         */
-        create: (file: Blob | File, params: {
-            challenge_id?: number;
-            page_id?: number;
-            type?: string;
-            location?: string;
-        }) => Promise<CTFdFile>;
-        delete: (id: number) => Promise<boolean>;
-    };
-    pages: {
-        list: (query?: {
-            draft?: boolean;
-            hidden?: boolean;
-            q?: string;
-        }) => Promise<CTFdPage[]>;
-        get: (id: number) => Promise<CTFdPage>;
-        create: (data: Partial<CTFdPage>) => Promise<CTFdPage>;
-        update: (id: number, data: Partial<CTFdPage>) => Promise<CTFdPage>;
-        delete: (id: number) => Promise<boolean>;
-    };
-    notifications: {
-        list: (query?: {
-            since_id?: number;
-            q?: string;
-        }) => Promise<CTFdNotification[]>;
-        create: (data: Partial<CTFdNotification>) => Promise<CTFdNotification>;
-        delete: (id: number) => Promise<boolean>;
-    };
-    configs: {
-        list: (query?: {
-            key?: string;
-            value?: string;
-            q?: string;
-        }) => Promise<CTFdConfig[]>;
-        get: (key: string) => Promise<CTFdConfig>;
-        create: (data: CTFdConfig) => Promise<CTFdConfig>;
-        update: (key: string, value: string) => Promise<CTFdConfig>;
-        delete: (key: string) => Promise<boolean>;
-    };
-    statistics: {
-        challenges: {
-            solves: () => Promise<any>;
-            percentages: () => Promise<any>;
-            propertyCounts: (column: string) => Promise<any>;
-        };
-        scores: {
-            distribution: () => Promise<any>;
-        };
-        teams: () => Promise<any>;
-        users: {
-            general: () => Promise<any>;
-            propertyCounts: (column: string) => Promise<any>;
-        };
-        submissions: {
-            propertyCounts: (column: string) => Promise<any>;
-        };
-    };
-    flags: {
-        list: (query?: any) => Promise<CTFdFlag[]>;
-        create: (data: Partial<CTFdFlag>) => Promise<CTFdFlag>;
-        update: (id: number, data: Partial<CTFdFlag>) => Promise<CTFdFlag>;
-        delete: (id: number) => Promise<boolean>;
-        getTypes: () => Promise<any>;
-    };
-    hints: {
-        list: (query?: any) => Promise<CTFdHint[]>;
-        create: (data: Partial<CTFdHint>) => Promise<CTFdHint>;
-        update: (id: number, data: Partial<CTFdHint>) => Promise<CTFdHint>;
-        delete: (id: number) => Promise<boolean>;
-    };
-    tags: {
-        list: (query?: any) => Promise<CTFdTag[]>;
-        create: (data: Partial<CTFdTag>) => Promise<CTFdTag>;
-        update: (id: number, data: Partial<CTFdTag>) => Promise<CTFdTag>;
-        delete: (id: number) => Promise<boolean>;
-    };
-    topics: {
-        list: (query?: any) => Promise<CTFdTopic[]>;
-        create: (data: Partial<CTFdTopic>) => Promise<CTFdTopic>;
-        delete: (id: number) => Promise<boolean>;
-    };
-    unlocks: {
-        list: (query?: any) => Promise<any[]>;
-        create: (targetId: number, type: "hints" | "solutions") => Promise<CTFdResponse<{
-            success: boolean;
-            errors?: any;
-        }>>;
-    };
-    tokens: {
-        list: () => Promise<CTFdToken[]>;
-        create: (data: {
-            expiration?: string;
-            description?: string;
-        }) => Promise<CTFdToken>;
-        delete: (id: number) => Promise<boolean>;
-    };
-    solutions: {
-        list: (query?: any) => Promise<CTFdSolution[]>;
-        create: (data: Partial<CTFdSolution>) => Promise<CTFdSolution>;
-        update: (id: number, data: Partial<CTFdSolution>) => Promise<CTFdSolution>;
-        delete: (id: number) => Promise<boolean>;
-    };
+    users: UsersResource;
+    teams: TeamsResource;
+    challenges: ChallengesResource;
+    scoreboard: ScoreboardResource;
+    submissions: SubmissionsResource;
+    configs: ConfigsResource;
+    notifications: NotificationsResource;
+    pages: PagesResource;
+    flags: FlagsResource;
+    hints: HintsResource;
+    files: FilesResource;
+    awards: AwardsResource;
+    tags: TagsResource;
+    tokens: TokensResource;
+    unlocks: UnlocksResource;
+    statistics: StatisticsResource;
+    constructor(baseURL: string, accessToken: string);
+    request<T>(method: "GET" | "POST" | "PATCH" | "DELETE", endpoint: string, body?: any, params?: any): Promise<T>;
 }
+declare class BaseResource {
+    protected client: CTFdClient;
+    constructor(client: CTFdClient);
+}
+export declare class ChallengesResource extends BaseResource {
+    list(params?: ChallengeSearchParams): Promise<APIPaginatedResponse<Challenge>>;
+    get(id: number): Promise<APISuccessResponse<Challenge>>;
+    create(data: Partial<Challenge>): Promise<APISuccessResponse<Challenge>>;
+    update(id: number, data: Partial<Challenge>): Promise<APISuccessResponse<Challenge>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+    attempt(challengeId: number, submission: string): Promise<APISuccessResponse<{
+        status: string;
+        message: string;
+    }>>;
+    getTypes(): Promise<APISuccessResponse<Record<string, any>>>;
+    getSolves(id: number): Promise<APISuccessResponse<any[]>>;
+    getFiles(id: number): Promise<APISuccessResponse<File[]>>;
+    getFlags(id: number): Promise<APISuccessResponse<Flag[]>>;
+    getHints(id: number): Promise<APISuccessResponse<Hint[]>>;
+    getTags(id: number): Promise<APISuccessResponse<Tag[]>>;
+}
+export declare class UsersResource extends BaseResource {
+    list(params?: UserSearchParams): Promise<APIPaginatedResponse<User>>;
+    get(id: number): Promise<APISuccessResponse<User>>;
+    create(data: Partial<User>, notify?: boolean): Promise<APISuccessResponse<User>>;
+    update(id: number, data: Partial<User>): Promise<APISuccessResponse<User>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+    getMe(): Promise<APISuccessResponse<User>>;
+    updateMe(data: Partial<User>): Promise<APISuccessResponse<User>>;
+    getSolves(id: number | "me"): Promise<APISuccessResponse<any[]>>;
+    getFails(id: number | "me"): Promise<APISuccessResponse<any[]>>;
+    getAwards(id: number | "me"): Promise<APISuccessResponse<Award[]>>;
+    email(id: number, text: string): Promise<APISuccessResponse<null>>;
+}
+export declare class TeamsResource extends BaseResource {
+    list(params?: TeamSearchParams): Promise<APIPaginatedResponse<Team>>;
+    get(id: number): Promise<APISuccessResponse<Team>>;
+    create(data: Partial<Team>): Promise<APISuccessResponse<Team>>;
+    update(id: number, data: Partial<Team>): Promise<APISuccessResponse<Team>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+    getMe(): Promise<APISuccessResponse<Team>>;
+    updateMe(data: Partial<Team>): Promise<APISuccessResponse<Team>>;
+    getSolves(id: number | "me"): Promise<APISuccessResponse<any[]>>;
+    getFails(id: number | "me"): Promise<APISuccessResponse<any[]>>;
+    getAwards(id: number | "me"): Promise<APISuccessResponse<Award[]>>;
+    getMembers(id: number): Promise<APISuccessResponse<User[]>>;
+}
+export declare class SubmissionsResource extends BaseResource {
+    list(params?: SubmissionSearchParams): Promise<APIPaginatedResponse<Submission>>;
+    create(data: Partial<Submission>): Promise<APISuccessResponse<Submission>>;
+    get(id: number): Promise<APISuccessResponse<Submission>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+}
+export declare class ScoreboardResource extends BaseResource {
+    get(): Promise<APISuccessResponse<any[]>>;
+    getTop(count: number): Promise<APISuccessResponse<any>>;
+}
+export declare class ConfigsResource extends BaseResource {
+    list(params?: {
+        key?: string;
+        value?: string;
+    }): Promise<APIPaginatedResponse<Config>>;
+    get(key: string): Promise<APISuccessResponse<Config>>;
+    create(data: {
+        key: string;
+        value: string;
+    }): Promise<APISuccessResponse<Config>>;
+    update(key: string, value: string): Promise<APISuccessResponse<Config>>;
+    delete(key: string): Promise<APISuccessResponse<null>>;
+}
+export declare class NotificationsResource extends BaseResource {
+    list(params?: {
+        title?: string;
+        content?: string;
+    }): Promise<APIPaginatedResponse<Notification>>;
+    create(data: Partial<Notification>): Promise<APISuccessResponse<Notification>>;
+    get(id: number): Promise<APISuccessResponse<Notification>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+}
+export declare class PagesResource extends BaseResource {
+    list(params?: any): Promise<APIPaginatedResponse<Page>>;
+    create(data: Partial<Page>): Promise<APISuccessResponse<Page>>;
+    get(id: number): Promise<APISuccessResponse<Page>>;
+    update(id: number, data: Partial<Page>): Promise<APISuccessResponse<Page>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+}
+export declare class FlagsResource extends BaseResource {
+    list(params?: {
+        challenge_id?: number;
+        type?: string;
+    }): Promise<APIPaginatedResponse<Flag>>;
+    create(data: Partial<Flag>): Promise<APISuccessResponse<Flag>>;
+    get(id: number): Promise<APISuccessResponse<Flag>>;
+    update(id: number, data: Partial<Flag>): Promise<APISuccessResponse<Flag>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+    getTypes(): Promise<APISuccessResponse<Record<string, any>>>;
+}
+export declare class HintsResource extends BaseResource {
+    list(params?: {
+        challenge_id?: number;
+    }): Promise<APIPaginatedResponse<Hint>>;
+    create(data: Partial<Hint>): Promise<APISuccessResponse<Hint>>;
+    get(id: number): Promise<APISuccessResponse<Hint>>;
+    update(id: number, data: Partial<Hint>): Promise<APISuccessResponse<Hint>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+}
+export declare class FilesResource extends BaseResource {
+    list(params?: {
+        type?: string;
+        location?: string;
+    }): Promise<APIPaginatedResponse<File>>;
+    create(data: any): Promise<APISuccessResponse<File>>;
+    get(id: number): Promise<APISuccessResponse<File>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+}
+export declare class AwardsResource extends BaseResource {
+    list(params?: {
+        user_id?: number;
+        team_id?: number;
+    }): Promise<APIPaginatedResponse<Award>>;
+    create(data: Partial<Award>): Promise<APISuccessResponse<Award>>;
+    get(id: number): Promise<APISuccessResponse<Award>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+}
+export declare class TagsResource extends BaseResource {
+    list(params?: {
+        challenge_id?: number;
+    }): Promise<APIPaginatedResponse<Tag>>;
+    create(data: Partial<Tag>): Promise<APISuccessResponse<Tag>>;
+    get(id: number): Promise<APISuccessResponse<Tag>>;
+    update(id: number, data: Partial<Tag>): Promise<APISuccessResponse<Tag>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+}
+export declare class TokensResource extends BaseResource {
+    list(): Promise<APIPaginatedResponse<Token>>;
+    create(data: Partial<Token>): Promise<APISuccessResponse<Token>>;
+    get(id: number): Promise<APISuccessResponse<Token>>;
+    delete(id: number): Promise<APISuccessResponse<null>>;
+}
+export declare class UnlocksResource extends BaseResource {
+    list(params?: {
+        user_id?: number;
+        team_id?: number;
+        target?: number;
+        type?: string;
+    }): Promise<APIPaginatedResponse<Unlock>>;
+    create(data: Partial<Unlock>): Promise<APISuccessResponse<Unlock>>;
+}
+export declare class StatisticsResource extends BaseResource {
+    getChallengeSolves(): Promise<APISuccessResponse<any>>;
+    getChallengeSolvePercentages(): Promise<APISuccessResponse<any>>;
+    getChallengePropertyCounts(column: string): Promise<APISuccessResponse<any>>;
+    getScoreDistribution(): Promise<APISuccessResponse<any>>;
+    getSubmissionPropertyCounts(column: string): Promise<APISuccessResponse<any>>;
+    getTeamStatistics(): Promise<APISuccessResponse<any>>;
+    getUserStatistics(): Promise<APISuccessResponse<any>>;
+    getUserPropertyCounts(column: string): Promise<APISuccessResponse<any>>;
+}
+export {};
